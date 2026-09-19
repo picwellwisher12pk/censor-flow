@@ -2,6 +2,8 @@
 
 **Smart Video & Audio Censorship, Redaction & Auto-Skip Studio**
 
+🌐 **Live Web Studio**: [https://picwellwisher12pk.github.io/censor-flow/](https://picwellwisher12pk.github.io/censor-flow/)
+
 CensorFlow is a versatile, cross-platform studio for creating, managing, and applying dynamic content redactions (blur, pixelate, blackout, mute, bleep, and **auto-scene skipping**) to video and audio files using a standardized portable metadata format (`.censor.json`).
 
 ---
