@@ -7,8 +7,9 @@ import {
   Terminal, 
   MoreHorizontal, 
   Film, 
-  Sliders,
-  MessageSquare
+  MessageSquare,
+  ArrowLeft,
+  Sliders
 } from 'lucide-react';
 import type { PlaybackSettings } from '../types/censor';
 
@@ -24,6 +25,7 @@ interface HeaderProps {
   onOpenSubtitleModal: () => void;
   subtitlesCount: number;
   cuesCount: number;
+  onGoToHome?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -38,6 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSubtitleModal,
   subtitlesCount,
   cuesCount,
+  onGoToHome,
 }) => {
   const [showMoreMenu, setShowMoreMenu] = useState(false);
 
@@ -45,6 +48,16 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="h-16 bg-slate-900/90 backdrop-blur border-b border-slate-800 px-4 flex items-center justify-between text-white select-none z-30 shrink-0">
       {/* Brand & Project Info */}
       <div className="flex items-center space-x-3">
+        {onGoToHome && (
+          <button
+            onClick={onGoToHome}
+            className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg text-xs font-medium transition-colors cursor-pointer border border-slate-700/60"
+            title="Return to CensorFlow Homepage"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Home</span>
+          </button>
+        )}
         <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
           <Shield className="w-5 h-5 text-white" />
         </div>

@@ -21,8 +21,54 @@ import { CueInspector } from './components/CueInspector';
 import { FFmpegModal } from './components/Modals/FFmpegModal';
 import { AiScannerModal } from './components/Modals/AiScannerModal';
 import { SubtitleSyncModal } from './components/Modals/SubtitleSyncModal';
+import { LandingPage } from './components/LandingPage';
+
+const isDesktopApp = typeof window !== 'undefined' && ('__TAURI_INTERNALS__' in window || '__TAURI__' in window);
+
+const getInitialPage = (): 'landing' | 'studio' => {
+  if (isDesktopApp) return 'studio';
+  const hash = window.location.hash.toLowerCase();
+  const search = window.location.search.toLowerCase();
+  if (hash === '#app' || hash === '#/app' || hash === '#studio' || search.includes('app')) {
+    return 'studio';
+  }
+  return 'landing';
+};
 
 export const App: React.FC = () => {
+  // Page routing: 'landing' marketing page vs 'studio' editor app
+  const [currentPage, setCurrentPage] = useState<'landing' | 'studio'>(getInitialPage);
+
+  useEffect(() => {
+    if (isDesktopApp) return;
+    const handleHashChange = () => {
+      const hash = window.location.hash.toLowerCase();
+      const search = window.location.search.toLowerCase();
+      if (hash === '#app' || hash === '#/app' || hash === '#studio' || search.includes('app')) {
+        setCurrentPage('studio');
+      } else if (hash === '' || hash === '#' || hash === '#home') {
+        setCurrentPage('landing');
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener('popstate', handleHashChange);
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener('popstate', handleHashChange);
+    };
+  }, []);
+
+  const handleLaunchApp = () => {
+    setCurrentPage('studio');
+    window.location.hash = '#app';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleGoToLanding = () => {
+    setCurrentPage('landing');
+    window.location.hash = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
   // Video and playback state
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
@@ -522,6 +568,10 @@ export const App: React.FC = () => {
 
   const selectedCue = project.cues.find(c => c.id === selectedCueId) || null;
 
+  if (currentPage === 'landing' && !isDesktopApp) {
+    return <LandingPage onLaunchApp={handleLaunchApp} />;
+  }
+
   return (
     <div 
       onDragOver={handleDragOver}
@@ -558,6 +608,7 @@ export const App: React.FC = () => {
         onOpenSubtitleModal={() => setShowSubtitleModal(true)}
         subtitlesCount={subtitles.length}
         cuesCount={project.cues.length}
+        onGoToHome={!isDesktopApp ? handleGoToLanding : undefined}
       />
 
       {/* Main Workspace (Viewport + Optional Cue Inspector Sidebar) */}
